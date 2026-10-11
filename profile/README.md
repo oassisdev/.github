@@ -35,3 +35,11 @@ That answers `402` with the exact price of that call. Pay it (x402, USDC on Base
 
 Prices start at **$0.001** a page. Quoted before the work, refunded when the work does not
 happen, and the balance never expires.
+
+### Agent tasks
+
+Ask a question in plain words and get an answer with its sources. The agent plans its own steps,
+reads public pages and answers. `POST /agent/v1/tasks` with an API key and a balance; the budget is
+reserved first and the unused part comes back. Read it with `GET /agent/v1/tasks/{id}`, stop it with
+`POST /agent/v1/tasks/{id}/cancel`. Also available as the MCP tools `web_task_start`, `web_task_status`
+and `web_task_cancel`. Details in the [code repository](https://github.com/oassisdev/oassis-api#agent-tasks).
