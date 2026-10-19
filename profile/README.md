@@ -1,7 +1,7 @@
 ## oassis — web infrastructure for AI agents
 
 Search the web, extract pages and documents, crawl sites, and interact with a persistent
-browser through an HTTP API or MCP. Use individual **Web Tools**, asynchronous **Tasks**,
+browser through an HTTP API or MCP. Use individual **Web Tools**, asynchronous **Web Tasks**,
 or scheduled **Agents** for monitoring.
 
 ### Access and credits
@@ -18,14 +18,39 @@ or scheduled **Agents** for monitoring.
 - Eligible unused work is refunded to account credits. **Settled x402 payments have no
   automatic on-chain refund.**
 
-### Three product layers
+### Web Tools
 
-| Layer | Routes | What it does |
+| MCP tool | HTTP route | What it does |
 | --- | --- | --- |
-| **Web Tools** | `/web/v1/scrape`, `/web/v1/map`, `/web/v1/search`, `/web/v1/session`, `/web/v1/act`, `/web/v1/feedback` | Read pages or documents, discover URLs, search, and operate a browser. |
-| **Extraction Tasks** | `/tasks/v1/scrape/batch`, `/tasks/v1/crawl` | Start an asynchronous job, poll `GET /{id}`, or stop pending work with `POST /{id}/cancel`. |
-| **Research Tasks** | `/tasks/v1/research` | Answer a research question from public pages with sources, progress and billing. Read `GET /{task_id}` or stop with `POST /{task_id}/cancel`. |
-| **Scheduled Agents** | `/agents/v1` | Configure `price-watch`, `web-watch` or `competitor-monitor`, then read a service with `GET /agents/v1/services/{id}` or cancel it with `POST /agents/v1/services/{id}/cancel`. Currently free with an account key; HTTP only, no MCP tools. |
+| `web_scrape` | `POST /web/v1/scrape` | Read a page or document in the requested formats. |
+| `web_map` | `POST /web/v1/map` | List a site's URLs from its sitemap and optionally the page. |
+| `web_search_exa` | `POST /web/v1/search` | Search the web. |
+| `web_session_open` | `POST /web/v1/session` | Open a browser session and inspect its controls. |
+| `web_act` | `POST /web/v1/act` | Interact with an open browser session. |
+| `web_session_close` | `POST /web/v1/session/{id}/close` | Close the browser session and settle any outstanding time. |
+| `web_feedback` | `POST /web/v1/feedback` | Report whether a result was correct. Free. |
+
+### Web Tasks
+
+| MCP tool | HTTP route | What it does |
+| --- | --- | --- |
+| `web_scrape_batch` | `POST /tasks/v1/scrape/batch` | Start a batch extraction job from a supplied list of URLs. |
+| `web_batch_status` | `GET /tasks/v1/scrape/batch/{id}` | Read batch status and collect its results. |
+| `web_batch_status` | `POST /tasks/v1/scrape/batch/{id}/cancel` | Cancel pending batch work. With MCP, send cancel: true. |
+| `web_crawl` | `POST /tasks/v1/crawl` | Start a crawl job that discovers and reads linked pages. |
+| `web_crawl_status` | `GET /tasks/v1/crawl/{id}` | Read crawl status and collect its results. |
+| `web_crawl_status` | `POST /tasks/v1/crawl/{id}/cancel` | Cancel pending crawl work. With MCP, send cancel: true. |
+| `web_task_start` | `POST /tasks/v1/research` | Start research from public pages and return an answer with sources. |
+| `web_task_status` | `GET /tasks/v1/research/{id}` | Read research progress, sources, result and billing. |
+| `web_task_cancel` | `POST /tasks/v1/research/{id}/cancel` | Cancel pending research work. |
+
+### Agents
+
+Scheduled monitoring is separate from Web Tasks. Configure `price-watch`, `web-watch` or
+`competitor-monitor` under `/agents/v1`. Read a report with
+`GET /agents/v1/services/{id}`; stop a service with
+`POST /agents/v1/services/{id}/cancel`. Currently free with an account key; HTTP only.
+Account credits are separate from Web Tools: `GET /web/v1/account` requires an API key.
 
 Close a browser session explicitly with **`POST /web/v1/session/{id}/close`**.
 The corresponding MCP tool remains **`web_session_close`**. Closing has no extra fee;
